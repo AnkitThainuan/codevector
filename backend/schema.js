@@ -1,7 +1,4 @@
-/**
- * schema.js — creates the products table and indexes.
- * Run once before seeding: node schema.js
- */
+
 
 require('dotenv').config();
 const { Pool } = require('pg');
@@ -31,9 +28,7 @@ async function createSchema() {
       );
     `);
 
-    // This composite index is the core of fast cursor pagination.
-    // PostgreSQL can satisfy (created_at DESC, id DESC) ORDER BY + WHERE
-    // (created_at, id) < (x, y) entirely from the index — no table scan.
+ 
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_products_cursor
         ON products (created_at DESC, id DESC);

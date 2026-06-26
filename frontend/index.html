@@ -322,14 +322,11 @@
 
 <script>
   // ── Config ──────────────────────────────────────────────────────────────────
-  // Replace with your deployed backend URL
-  const API_BASE = window.location.hostname === 'localhost'
-    ? 'http://localhost:3000'
-    : 'https://your-backend.onrender.com'; // ← update this after deploy
+ 
+  const API_BASE = 'https://codevector-ga37.onrender.com';
 
   // ── State ───────────────────────────────────────────────────────────────────
-  let cursors = [null]; // cursors[0] = null (first page), cursors[1] = cursor after page 1, etc.
-  let currentPage = 0;  // index into cursors array
+  let cursors = [null]; 
   let currentCategory = '';
   let currentLimit = 20;
   let hasNextPage = false;

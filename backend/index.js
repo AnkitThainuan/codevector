@@ -20,22 +20,7 @@ app.get('/', (req, res) => {
   res.json({ status: 'ok', message: 'CodeVector Product API' });
 });
 
-/**
- * GET /products
- * 
- * Cursor-based pagination for stable browsing even when data changes.
- * 
- * Query params:
- *   - limit        number of items per page (default 20, max 100)
- *   - cursor       opaque string encoding (created_at, id) of the last seen item
- *   - category     filter by category (optional)
- * 
- * Why cursor-based?
- *   Offset pagination (LIMIT x OFFSET y) is fragile: if 50 new rows are
- *   inserted while you're on page 3, every subsequent page shifts and you
- *   either see duplicates or skip rows. A (created_at, id) cursor is a
- *   stable pointer into the data — new rows inserted above it never move it.
- */
+
 app.get('/products', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit) || 20, 100);
@@ -56,10 +41,7 @@ app.get('/products', async (req, res) => {
       }
     }
 
-    // Build query dynamically
-    // We sort by (created_at DESC, id DESC) — newest first.
-    // The cursor condition uses a ROW comparison which PostgreSQL handles
-    // efficiently with a composite index on (created_at DESC, id DESC).
+    
     const values = [];
     let paramIdx = 1;
 
@@ -67,8 +49,7 @@ app.get('/products', async (req, res) => {
     const conditions = [];
 
     if (cursorCreatedAt && cursorId) {
-      // Stable cursor: fetch rows that come *after* the cursor in our sort order
-      // i.e., rows where (created_at, id) is strictly less than the cursor point
+     
       conditions.push(`(created_at, id) < ($${paramIdx++}::timestamptz, $${paramIdx++}::uuid)`);
       values.push(cursorCreatedAt, cursorId);
     }

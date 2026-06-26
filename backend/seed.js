@@ -1,13 +1,4 @@
-/**
- * seed.js — generates 200,000 products fast using a single SQL statement.
- *
- * Key insight: doing 200k individual INSERTs from Node would be slow (~minutes).
- * Instead, we use PostgreSQL's generate_series() to create all rows server-side
- * in one query. The DB never leaves the server, no round-trips, no JS overhead.
- * Typically completes in 5–15 seconds on Neon/Supabase free tier.
- *
- * Run: node seed.js
- */
+
 
 require('dotenv').config();
 const { Pool } = require('pg');
@@ -58,16 +49,12 @@ async function seed() {
     console.log('Seeding 200,000 products...');
     const start = Date.now();
 
-    // Build the category and name arrays as Postgres literals so we can
-    // index into them with (i % array_length). All logic stays in one SQL
-    // statement — no loops, no batching, no network overhead.
+  
     const categoryLiteral = `ARRAY[${CATEGORIES.map(c => `'${c}'`).join(',')}]`;
     const adjLiteral = `ARRAY[${ADJECTIVES.map(a => `'${a}'`).join(',')}]`;
     const nounLiteral = `ARRAY[${NOUNS.map(n => `'${n}'`).join(',')}]`;
 
-    // created_at is spread over the past 2 years using a random interval,
-    // giving a realistic distribution rather than all rows at the same timestamp.
-    // updated_at is always >= created_at.
+    
     await client.query(`
       INSERT INTO products (id, name, category, price, created_at, updated_at)
       SELECT
