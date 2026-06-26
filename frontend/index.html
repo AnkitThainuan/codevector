@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Catalog</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f11;
+      --surface: #18181c;
+      --border: #2a2a30;
+      --accent: #7c6af7;
+      --accent-dim: #3d3480;
+      --text: #e8e8ec;
+      --text-muted: #6b6b78;
+      --text-dim: #a0a0b0;
+      --green: #34d399;
+      --radius: 10px;
+      --font: 'Inter', system-ui, sans-serif;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(15, 15, 17, 0.92);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .stats {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Toolbar */
+    .toolbar {
+      padding: 20px 32px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toolbar label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    select, .page-size-select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-family: var(--font);
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    select:hover, select:focus {
+      border-color: var(--accent);
+    }
+
+    .divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+
+    /* Product grid */
+    .container {
+      padding: 24px 32px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: border-color 0.15s, transform 0.1s;
+      cursor: default;
+    }
+
+    .card:hover {
+      border-color: var(--accent-dim);
+      transform: translateY(-2px);
+    }
+
+    .card-category {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .card-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .card-date {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    /* Pagination */
+    .pagination {
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 9px 20px;
+      font-size: 14px;
+      font-family: var(--font);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      outline: none;
+    }
+
+    button:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #6b5be6;
+      border-color: #6b5be6;
+      color: white;
+    }
+
+    .page-info {
+      font-size: 13px;
+      color: var(--text-muted);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    /* States */
+    .loading {
+      text-align: center;
+      padding: 80px 32px;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty {
+      text-align: center;
+      padding: 80px 32px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    /* Category pills */
+    .category-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* Toast for notifications */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--text-dim);
+      display: none;
+      z-index: 999;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    @media (max-width: 640px) {
+      header { padding: 16px; }
+      .toolbar { padding: 12px 16px; }
+      .container { padding: 16px; }
+      .pagination { padding: 20px 16px; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">product<span>.</span>browse</div>
+  <div class="stats" id="stats">—</div>
+</header>
+
+<div class="toolbar">
+  <label for="category-filter">Category</label>
+  <select id="category-filter">
+    <option value="">All Categories</option>
+  </select>
+
+  <div class="divider"></div>
+
+  <label for="page-size">Per page</label>
+  <select id="page-size" class="page-size-select">
+    <option value="20">20</option>
+    <option value="40">40</option>
+    <option value="100">100</option>
+  </select>
+</div>
+
+<div class="container">
+  <div id="grid-container">
+    <div class="loading">
+      <div class="spinner"></div>
+      Loading products…
+    </div>
+  </div>
+
+  <div class="pagination">
+    <button id="btn-prev" disabled onclick="goBack()">← Prev</button>
+    <span class="page-info" id="page-info">Page 1</span>
+    <button id="btn-next" class="btn-primary" disabled onclick="goNext()">Next →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── Config ──────────────────────────────────────────────────────────────────
+  // Replace with your deployed backend URL
+  const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:3000'
+    : 'https://your-backend.onrender.com'; // ← update this after deploy
+
+  // ── State ───────────────────────────────────────────────────────────────────
+  let cursors = [null]; // cursors[0] = null (first page), cursors[1] = cursor after page 1, etc.
+  let currentPage = 0;  // index into cursors array
+  let currentCategory = '';
+  let currentLimit = 20;
+  let hasNextPage = false;
+
+  // ── Init ────────────────────────────────────────────────────────────────────
+  async function init() {
+    await loadCategories();
+    await loadPage();
+  }
+
+  async function loadCategories() {
+    try {
+      const res = await fetch(`${API_BASE}/categories`);
+      const data = await res.json();
+      const sel = document.getElementById('category-filter');
+      data.categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        sel.appendChild(opt);
+      });
+    } catch (e) {
+      console.error('Failed to load categories', e);
+    }
+  }
+
+  // ── Fetching ─────────────────────────────────────────────────────────────────
+  async function loadPage() {
+    const container = document.getElementById('grid-container');
+    container.innerHTML = `<div class="loading"><div class="spinner"></div>Loading…</div>`;
+
+    const cursor = cursors[currentPage];
+    const params = new URLSearchParams({ limit: currentLimit });
+    if (cursor) params.set('cursor', cursor);
+    if (currentCategory) params.set('category', currentCategory);
+
+    try {
+      const res = await fetch(`${API_BASE}/products?${params}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      hasNextPage = data.hasNextPage;
+
+      // Store the cursor for the next page if we don't have it yet
+      if (hasNextPage && cursors.length === currentPage + 1) {
+        cursors.push(data.nextCursor);
+      }
+
+      renderGrid(data.items);
+      updateControls(data.count);
+    } catch (e) {
+      container.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div>Failed to load. Check your API_BASE URL.</div>`;
+      console.error(e);
+    }
+  }
+
+  // ── Rendering ────────────────────────────────────────────────────────────────
+  function renderGrid(items) {
+    const container = document.getElementById('grid-container');
+
+    if (!items.length) {
+      container.innerHTML = `<div class="empty"><div class="empty-icon">📦</div>No products found.</div>`;
+      return;
+    }
+
+    const cards = items.map(p => {
+      const date = new Date(p.created_at).toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric'
+      });
+      const price = parseFloat(p.price).toLocaleString('en-IN', {
+        style: 'currency', currency: 'INR', maximumFractionDigits: 2
+      });
+      return `
+        <div class="card">
+          <div class="card-category">${p.category}</div>
+          <div class="card-name">${escHtml(p.name)}</div>
+          <div class="card-footer">
+            <div class="card-price">${price}</div>
+            <div class="card-date">Added<br>${date}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    container.innerHTML = `<div class="grid">${cards}</div>`;
+  }
+
+  function updateControls(count) {
+    const pageNum = currentPage + 1;
+    document.getElementById('page-info').textContent = `Page ${pageNum}`;
+    document.getElementById('btn-prev').disabled = currentPage === 0;
+    document.getElementById('btn-next').disabled = !hasNextPage;
+    document.getElementById('stats').textContent = `${count} products on this page`;
+  }
+
+  // ── Navigation ───────────────────────────────────────────────────────────────
+  function goNext() {
+    if (!hasNextPage) return;
+    currentPage++;
+    loadPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goBack() {
+    if (currentPage === 0) return;
+    currentPage--;
+    loadPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetAndLoad() {
+    cursors = [null];
+    currentPage = 0;
+    hasNextPage = false;
+    loadPage();
+  }
+
+  // ── Events ───────────────────────────────────────────────────────────────────
+  document.getElementById('category-filter').addEventListener('change', function() {
+    currentCategory = this.value;
+    resetAndLoad();
+  });
+
+  document.getElementById('page-size').addEventListener('change', function() {
+    currentLimit = parseInt(this.value);
+    resetAndLoad();
+  });
+
+  // ── Utils ────────────────────────────────────────────────────────────────────
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function showToast(msg, duration = 3000) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.style.display = 'none', duration);
+  }
+
+  init();
+</script>
+</body>
+</html>

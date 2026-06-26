@@ -1,0 +1,22 @@
+{
+  "name": "codevector-products-api",
+  "version": "1.0.0",
+  "description": "Cursor-paginated product browsing API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "db:schema": "node schema.js",
+    "db:seed": "node seed.js",
+    "db:setup": "node schema.js && node seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.0",
+    "pg": "^8.11.0"
+  }
+}
