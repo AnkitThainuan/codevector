@@ -2,8 +2,8 @@
 
 A backend for browsing ~200,000 products, with stable cursor-based pagination, category filtering, and a bonus UI.
 
-**Live demo:** [https://your-backend.onrender.com](https://your-backend.onrender.com)  
-**Frontend:** [https://your-frontend.vercel.app](https://your-frontend.vercel.app)
+**Live demo:** [https://your-backend.onrender.com](https://codevector-ga37.onrender.com)  
+**Frontend:** [https://your-frontend.vercel.app](https://resilient-marzipan-aebd0c.netlify.app/)
 
 ---
 
